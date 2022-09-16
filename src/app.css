@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .link {
+    @apply border-b-transparent hover:border-b-black border-b-2;
+  }
+
+  .form-control {
+    @apply outline-none focus:border-gray-500 w-full font-medium border-2 rounded p-2;
+  }
+}
