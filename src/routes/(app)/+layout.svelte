@@ -43,6 +43,10 @@
   };
 </script>
 
+<svelte:head>
+  <title>My Awesome Blog</title>
+</svelte:head>
+
 <Navbar />
 <Transition url={$page.url}>
   <slot />

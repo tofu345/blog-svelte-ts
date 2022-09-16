@@ -6,10 +6,6 @@ import type { RequestHandler } from "@sveltejs/kit";
 export const GET: RequestHandler = async () => {
   const posts = await api("/posts").then((res) => res.json());
 
-  // await new Promise((resolve) => {
-  //   setTimeout(() => resolve(), 10000);
-  // });
-
   if (posts) {
     return json(posts);
   }

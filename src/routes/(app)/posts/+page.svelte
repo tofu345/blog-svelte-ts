@@ -5,12 +5,17 @@
   import Post from "$lib/Post.svelte";
   import Body from "$lib/Body.svelte";
   import Info from "$lib/Info.svelte";
+  import PostListSkeleton from "$lib/PostListSkeleton.svelte";
   import PostSkeleton from "$lib/PostSkeleton.svelte";
 
   import posts from "$lib/stores/posts";
   import { sendNotification } from "$lib/stores/notifications";
 
   const fetchPosts = () => {
+    if ($posts) {
+      return;
+    }
+
     return fetch("/api/posts")
       .then((res) => res.json())
       .catch((err) => err)
@@ -49,15 +54,19 @@
 </header>
 
 {#await fetchPosts()}
-  <div class="flex justify-center items-center">
-    <p class="p-5">Fetching Posts...</p>
-  </div>
-{:then value}
+  <Body>
+    <div slot="left">
+      <PostListSkeleton />
+    </div>
+    <div slot="right">
+      <PostSkeleton />
+    </div>
+  </Body>
+{:then val}
   <div in:fly={{ x: -30, duration: 500 }}>
     {#if $posts}
       <Body>
         <div slot="left">
-          <!-- <PostSkeleton /> -->
           {#each $posts as post (post.id)}
             <div animate:flip={{ duration: 500 }}>
               <Post {post} on:deletePost={deletePost} />

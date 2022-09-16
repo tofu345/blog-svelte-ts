@@ -10,4 +10,22 @@
   .form-control {
     @apply outline-none focus:border-gray-500 w-full font-medium border-2 rounded p-2;
   }
+
+  .skeleton {
+    @apply bg-gray-300/70 rounded-md pulse;
+  }
+}
+
+.pulse {
+  animation: pulse 2s infinite ease;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 1;
+  }
 }

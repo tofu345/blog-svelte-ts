@@ -7,7 +7,7 @@
 
 <Card>
   <h2 class="text-xl pb-2 w-full border-b-2">Your Posts</h2>
-  <p class="italic">work in progress...</p>
+  <p class="italic">work in progress... (depends on auth)</p>
   <!-- <p
     href="/about"
     on:click={() => dispatch("openCreateModal")}

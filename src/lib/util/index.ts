@@ -6,3 +6,11 @@ export const truncateStr = (str: string) => {
     return str;
   }
 };
+
+// const awaitFunc = async () => {
+//   const res = await new Promise<void>((resolve) => {
+//     setTimeout(() => resolve(), 100000);
+//   });
+// };
+
+// awaitFunc();

@@ -105,7 +105,8 @@
   </div>
   <button
     on:click={() => submitPost()}
-    class="w-fit p-[10px] mt-2 bg-red-500 disabled:opacity-70 font-bold text-white rounded-md"
+    class="w-fit p-[10px] mt-2 bg-red-500 disabled:opacity-70 font-bold text-white rounded-lg
+      border-[3px] border-white focus:border-black"
   >
     Create
   </button>
