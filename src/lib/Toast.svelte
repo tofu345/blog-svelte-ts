@@ -2,15 +2,15 @@
   import { createEventDispatcher } from "svelte";
   import { truncateStr } from "$lib/util";
 
-  import type { Notification } from "$lib/types";
+  import type { Notif } from "$lib/types";
 
   const dispatch = createEventDispatcher();
 
-  export let notif: Notification;
+  export let notif: Notif;
 </script>
 
-<div class="bg-white rounded-xl flex w-fit border-2">
-  <div class="overflow-auto h-full m-4 mr-3">
+<div class="bg-white rounded-xl flex justify-between border-2 w-[350px]">
+  <div class="h-full m-4 mr-3 break-words overflow-hidden">
     {truncateStr(notif.message)}
   </div>
 

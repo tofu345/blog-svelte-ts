@@ -8,6 +8,8 @@
   import PostSkeleton from "$lib/PostSkeleton.svelte";
 
   import posts from "$lib/stores/posts";
+  import general from "$lib/stores/general";
+  import { api } from "$lib/api";
 
   const fetchPost = async () => {
     if ($posts) {
@@ -15,17 +17,24 @@
         if (el.slug === $page.params.slug && el.author === $page.params.author)
           return el;
       });
+
       if (post) {
         return { responseCode: 100, data: post };
       }
     }
 
-    const res = await fetch(
-      `/api/posts/${$page.params.author}/${$page.params.slug}`
-    );
-    return res.json();
+    const res = await api({
+      url: `/posts/${$page.params.author}/${$page.params.slug}`,
+    });
+    if (res.status == 200) {
+      return res.data;
+    }
   };
 </script>
+
+<svelte:head>
+  <title>{$general.title}</title>
+</svelte:head>
 
 {#await fetchPost()}
   <Body>
@@ -37,7 +46,7 @@
     </div>
   </Body>
 {:then res}
-  {#if res.responseCode == 100}
+  {#if res}
     <div in:fly={{ x: -30, duration: 500 }}>
       <Body>
         <div slot="left">
