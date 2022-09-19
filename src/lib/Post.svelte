@@ -1,9 +1,9 @@
 <script lang="ts">
   import Card from "./Card.svelte";
   import { truncateStr, deletePost } from "$lib/util";
-  import type { Post } from "$lib/types";
+  import type { PostObj } from "$lib/types";
 
-  export let post: Post = {
+  export let post: PostObj = {
     id: 0,
     title: "Post",
     content: `
@@ -11,7 +11,7 @@
     Animi excepturi aperiam recusandae deserunt, dolor, 
     reiciendis velit, perspiciatis tenetur asperiores vero debitis. 
     Officia accusantium iure iusto enim? Magnam dicta autem vero.`,
-    get_absolute_url: "/",
+    to: "/",
     author: "tofu",
     created: "Today",
     updated: "",
@@ -35,7 +35,7 @@
   {#if !isDetailView}
     <a
       class="css-transition relative p-[10px] pr-7 mt-2 bg-blue-500 font-bold text-white rounded-md"
-      href={post.get_absolute_url}
+      href={post.to}
     >
       <p>Read More</p>
       <svg

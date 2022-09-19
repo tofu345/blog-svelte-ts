@@ -1,16 +1,15 @@
 <script lang="ts">
   import { fly } from "svelte/transition";
   import { flip } from "svelte/animate";
-
   import Post from "$lib/Post.svelte";
   import Body from "$lib/Body.svelte";
   import Info from "$lib/Info.svelte";
   import PostListSkeleton from "$lib/PostListSkeleton.svelte";
   import PostSkeleton from "$lib/PostSkeleton.svelte";
-
   import posts from "$lib/stores/posts";
   import { deletePost } from "$lib/util";
   import Header from "$lib/Header.svelte";
+  import type { PostObj } from "$lib/types";
 
   import { api } from "$lib/api";
 
@@ -21,21 +20,32 @@
 
     const res = await api({
       url: "/posts",
+      headers: {
+        Authorization: `Bearer ${
+          JSON.parse(window.localStorage.getItem("user") || "{}").accessToken
+        }`,
+      },
     });
 
-    if (res.data) {
-      posts.set(res.data.data);
+    if (res.status == 200) {
+      const data = res.data.data;
+      data.forEach((el: PostObj) => {
+        el["to"] = `/posts/${el.author}/${el.slug}`;
+      });
+      posts.set(data);
     }
 
     return res;
   };
+
+  const postList = fetchPosts();
 </script>
 
 <header class="bg-[#3398E1] p-10 px-[20%] text-white">
   <Header />
 </header>
 
-{#await fetchPosts()}
+{#await postList}
   <Body>
     <div slot="left">
       <PostListSkeleton />

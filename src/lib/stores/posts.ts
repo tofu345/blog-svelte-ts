@@ -1,7 +1,7 @@
 import { writable } from "svelte/store";
 
-import type { Post } from "$lib/types";
+import type { PostObj } from "$lib/types";
 
-const posts = writable<Post[]>();
+const posts = writable<PostObj[]>();
 
 export default posts;

@@ -1,6 +1,9 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
-  import { updatePosts } from "$lib/util";
+  import { closeModal, sendNotification, updatePosts } from "$lib/util";
+  import { api } from "$lib/api";
+  import { get } from "svelte/store";
+  import posts from "$lib/stores/posts";
 
   export let post = {
     title: "",
@@ -12,55 +15,46 @@
     content: "",
     non_field_errors: "",
   };
-  let submittingPost = false;
 
   $: titleInValid = post.title.trim() == "" || post.title.trim().length < 5;
   $: contentInValid =
     post.content.trim() == "" || post.content.trim().length < 5;
 
   const submitPost = async () => {
-    if (submittingPost) {
-      return;
-    }
+    (errors.title = ""), (errors.content = ""), (errors.non_field_errors = "");
 
-    (errors.title = ""),
-      (errors.content = ""),
-      (errors.non_field_errors = ""),
-      (submittingPost = true);
-
-    if (titleInValid) {
-      errors.title = "Title must be at least 5 characters";
-    }
-    if (contentInValid) {
+    if (titleInValid) errors.title = "Title must be at least 5 characters";
+    if (contentInValid)
       errors.content = "Content must be at least 5 characters";
-    }
     if (titleInValid || contentInValid) return;
 
     const config = {
+      url: "/posts",
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(post),
+      data: post,
     };
 
-    const res = await fetch("/api/posts/", config)
-      .then((res) => res.json())
-      .catch((res) => res.json());
+    const res = await api(config);
+    let data = res.data;
 
-    // console.log(res);
-
-    if (res.errors) {
-      if (res.errors.non_field_errors)
-        errors.non_field_errors = res.errors.non_field_errors;
-      if (res.errors.title) errors.title = res.errors.title;
-      if (res.errors.content) errors.content = res.errors.content;
+    if (res.response) {
+      data = res.response.data;
+      if (data.errors.non_field_errors)
+        errors.non_field_errors = data.errors.non_field_errors;
+      if (data.errors.title) errors.title = data.errors.title;
+      if (data.errors.content) errors.content = data.errors.content;
     } else {
-      updatePosts(res.data);
+      if (get(posts)) {
+        updatePosts(data.data);
+      }
+
+      closeModal();
+      sendNotification("Post Created Successfully!", 10000);
       goto("/posts");
     }
-
-    submittingPost = false;
   };
 </script>
 

@@ -1,8 +1,9 @@
 import posts from "$lib/stores/posts";
 import notifications from "$lib/stores/notifications";
 import general from "$lib/stores/general";
-import type { Notif, Post } from "$lib/types";
+import type { Notif, PostObj } from "$lib/types";
 import { goto } from "$app/navigation";
+import { api } from "$lib/api";
 
 export const truncateStr = (str: string) => {
   const length = 1000;
@@ -43,27 +44,28 @@ export const sendNotification = (message: string, timeout?: number) => {
   }
 };
 
-export const deletePost = async (post: Post) => {
+export const deletePost = async (post: PostObj) => {
   const config = {
+    url: `/posts/${post.author}/${post.slug}`,
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(post),
+    data: post,
   };
 
-  const res = await fetch(`/api/posts/${post.author}/${post.slug}`, config)
-    .then((res) => res.json())
-    .catch((res) => res.json());
+  const res = await api(config);
 
-  if (res.responseCode == 100) {
+  if (res.status == 200) {
+    const data = res.data;
+
     posts.update((currentData) => {
       return currentData.filter((el) => el.id != post.id);
     });
-  }
 
+    sendNotification(data.message, 10000);
+  }
   goto("/posts");
-  sendNotification(res.message, 10000);
 };
 
 export const closeModal = () => {
@@ -79,13 +81,14 @@ export const deleteNotif = (id: number) => {
   });
 };
 
-export const updatePosts = (post: Post) => {
+export const updatePosts = (post: PostObj) => {
   posts.update((currentData) => {
-    return [post, ...currentData];
+    post = { ...post, to: `/posts/${post.author}/${post.slug}` };
+    if (currentData) {
+      return [post, ...currentData];
+    }
+    return [post];
   });
-
-  closeModal();
-  sendNotification("Post Created Successfully!", 10000);
 };
 
 // const awaitFunc = async () => {

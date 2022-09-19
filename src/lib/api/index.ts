@@ -12,17 +12,16 @@ export const api = (config: AxiosRequestConfig) => {
   });
 
   return instance(config)
-    .then((res) => {
-      return res;
-    })
+    .then((res) => res)
     .catch((err) => {
-      const data = err.response.data;
+      err = err.response;
+      // const data = err.response.data;
 
-      if (data.detail === "Authentication credentials were not provided.") {
-        sendNotification("Please Login to continue", 5000);
-
+      if (err.status == 401) {
+        // if (data.detail === "Authentication credentials were not provided.") {
+        console.log(err);
+        sendNotification(err.data.message || err.data.detail, 5000);
         page.subscribe((value) => {
-          // goto("/login?next=" + value.url.pathname);
           goto("/login");
         });
       }

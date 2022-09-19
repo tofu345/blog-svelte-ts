@@ -4,11 +4,15 @@
 
   import { goto } from "$app/navigation";
 
+  import { browser } from "$app/environment";
+
   let error: string = "",
     username: string = "",
     disabled = false,
     usernameError = "",
     passwordError = "";
+
+  if (browser && window.localStorage.getItem("user")) goto("/posts");
 
   const handleSubmit = async (e: SubmitEvent) => {
     (error = ""), (usernameError = ""), (passwordError = "");
@@ -16,34 +20,35 @@
 
     const formEl = e.target as HTMLFormElement;
     const res = await send(formEl, "/token/");
-    const data = res.data;
+    let data = res.data;
 
     if (res.status != 200) {
-      const resErrors = res.response.data;
-      usernameError = resErrors.username ? resErrors.username : "";
-      passwordError = resErrors.password ? resErrors.password : "";
-      error = resErrors.detail ? resErrors.detail : "";
+      data = res.data;
+      usernameError = data.username ? data.username : "";
+      passwordError = data.password ? data.password : "";
+      error = data.detail ? data.detail : "";
 
       disabled = false;
       return;
     } else {
       if (data.access && data.refresh) {
-        // window.localStorage.setItem(
-        //   "user",
-        //   JSON.stringify({
-        //     username,
-        //     accessToken: data.access,
-        //     refreshToken: data.refresh,
-        //   })
-        // );
+        window.localStorage.setItem(
+          "user",
+          JSON.stringify({
+            username,
+            accessToken: data.access,
+            refreshToken: data.refresh,
+          })
+        );
 
         // const nextPage = new URLSearchParams(window.location.search).get(
         //   "next"
         // );
-        goto("/posts");
+        // window.location.href = nextPage ? `/posts?=${nextPage}` : "/posts";
+
+        window.location.href = "/posts";
         return;
       }
-      // console.log(userObj);
     }
 
     disabled = false;
@@ -52,7 +57,9 @@
 </script>
 
 <div class="w-screen h-screen flex flex-row">
-  <div class="w-full bg-[#3398E1] hidden md:block max-w-[40%] text-white py-10">
+  <div
+    class="w-full bg-[#3398E1] hidden md2:block max-w-[40%] text-white py-10"
+  >
     <div class="flex flex-col h-full justify-center items-center">
       <Header />
     </div>

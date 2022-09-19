@@ -3,13 +3,13 @@ export interface Notif {
   message: string;
 }
 
-export interface Post {
+export interface PostObj {
   id: number;
   title: string;
   content: string;
   author: string;
   slug: string;
-  get_absolute_url: string;
+  to: string;
   created: string;
   updated: string;
 }
