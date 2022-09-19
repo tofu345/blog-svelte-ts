@@ -8,6 +8,7 @@
   import PostSkeleton from "$lib/PostSkeleton.svelte";
 
   import posts from "$lib/stores/posts";
+  import general from "$lib/stores/general";
   import { api } from "$lib/api";
 
   const fetchPost = async () => {
@@ -25,9 +26,15 @@
     const res = await api({
       url: `/posts/${$page.params.author}/${$page.params.slug}`,
     });
-    if (res.status == 200) return res.data;
+    if (res.status == 200) {
+      return res.data;
+    }
   };
 </script>
+
+<svelte:head>
+  <title>{$general.title}</title>
+</svelte:head>
 
 {#await fetchPost()}
   <Body>

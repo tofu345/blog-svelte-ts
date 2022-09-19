@@ -7,6 +7,7 @@
   import PostListSkeleton from "$lib/PostListSkeleton.svelte";
   import PostSkeleton from "$lib/PostSkeleton.svelte";
   import posts from "$lib/stores/posts";
+  import general from "$lib/stores/general";
   import { deletePost } from "$lib/util";
   import Header from "$lib/Header.svelte";
   import type { PostObj } from "$lib/types";
@@ -40,6 +41,10 @@
 
   const postList = fetchPosts();
 </script>
+
+<svelte:head>
+  <title>{$general.title} | Post List</title>
+</svelte:head>
 
 <header class="bg-[#3398E1] p-10 px-[20%] text-white">
   <Header />
