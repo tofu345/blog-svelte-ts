@@ -1,8 +1,6 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
   import { goto } from "$app/navigation";
-
-  const dispatch = createEventDispatcher();
+  import { updatePosts } from "$lib/util";
 
   export let post = {
     title: "",
@@ -12,13 +10,13 @@
   let errors = {
     title: "",
     content: "",
-    non_field: "",
+    non_field_errors: "",
   };
   let submittingPost = false;
 
-  $: titleInValid = post.title.trim() == "" && post.title.trim().length < 5;
+  $: titleInValid = post.title.trim() == "" || post.title.trim().length < 5;
   $: contentInValid =
-    post.content.trim() == "" && post.content.trim().length < 5;
+    post.content.trim() == "" || post.content.trim().length < 5;
 
   const submitPost = async () => {
     if (submittingPost) {
@@ -27,15 +25,16 @@
 
     (errors.title = ""),
       (errors.content = ""),
-      (errors.non_field = ""),
+      (errors.non_field_errors = ""),
       (submittingPost = true);
 
-    if (titleInValid || contentInValid) {
-      if (titleInValid) errors.title = "This field is required";
-      if (contentInValid) errors.content = "This field is required";
-      submittingPost = false;
-      return;
+    if (titleInValid) {
+      errors.title = "Title must be at least 5 characters";
     }
+    if (contentInValid) {
+      errors.content = "Content must be at least 5 characters";
+    }
+    if (titleInValid || contentInValid) return;
 
     const config = {
       method: "POST",
@@ -53,17 +52,12 @@
 
     if (res.errors) {
       if (res.errors.non_field_errors)
-        errors.non_field = res.errors.non_field_errors;
+        errors.non_field_errors = res.errors.non_field_errors;
       if (res.errors.title) errors.title = res.errors.title;
       if (res.errors.content) errors.content = res.errors.content;
     } else {
-      dispatch("postCreated", res.data);
+      updatePosts(res.data);
       goto("/posts");
-      post = {
-        title: "",
-        content: "",
-        author: "tofu",
-      };
     }
 
     submittingPost = false;
@@ -72,8 +66,8 @@
 
 <div class="w-full p-4 pt-0 flex flex-col gap-2">
   <h3 class="text-2xl font-medium">
-    {#if errors.non_field}
-      <p class="text-red-500 text-sm">{errors.non_field}</p>
+    {#if errors.non_field_errors}
+      <p class="text-red-500 text-sm">{errors.non_field_errors}</p>
     {/if}
   </h3>
 

@@ -1,8 +1,9 @@
 <script lang="ts">
   import Card from "./Card.svelte";
-  import { truncateStr } from "$lib/util";
+  import { truncateStr, deletePost } from "$lib/util";
+  import type { Post } from "$lib/types";
 
-  export let post = {
+  export let post: Post = {
     id: 0,
     title: "Post",
     content: `
@@ -13,6 +14,8 @@
     get_absolute_url: "/",
     author: "tofu",
     created: "Today",
+    updated: "",
+    slug: "",
   };
   export let isDetailView = false;
 </script>
@@ -51,13 +54,13 @@
     </a>
   {/if}
 
-  <!-- {#if !isDetailView}
+  {#if isDetailView}
     <button
       type="button"
       class="absolute top-0 right-0 m-3 text-gray-400 bg-transparent hover:bg-gray-200
       hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center
       dark:hover:bg-gray-600 dark:hover:text-white"
-      on:click={() => dispatch("deletePost", post)}
+      on:click={() => deletePost(post)}
     >
       <svg
         aria-hidden="true"
@@ -76,7 +79,7 @@
       </svg>
       <span class="sr-only">Close modal</span>
     </button>
-  {/if} -->
+  {/if}
 </Card>
 
 <style>

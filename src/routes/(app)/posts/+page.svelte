@@ -9,48 +9,30 @@
   import PostSkeleton from "$lib/PostSkeleton.svelte";
 
   import posts from "$lib/stores/posts";
-  import { sendNotification } from "$lib/stores/notifications";
+  import { deletePost } from "$lib/util";
+  import Header from "$lib/Header.svelte";
 
-  const fetchPosts = () => {
+  import { api } from "$lib/api";
+
+  const fetchPosts = async () => {
     if ($posts) {
       return;
     }
 
-    return fetch("/api/posts")
-      .then((res) => res.json())
-      .catch((err) => err)
-      .then((res) => {
-        posts.set(res.data);
-      });
-  };
+    const res = await api({
+      url: "/posts",
+    });
 
-  const deletePost = async (e: CustomEvent) => {
-    const post = e.detail;
-    const config = {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(post),
-    };
-
-    const res = await fetch(`/api/posts/${post.author}/${post.slug}`, config)
-      .then((res) => res.json())
-      .catch((res) => res.json());
-
-    if (res.responseCode == 100) {
-      posts.update((currentData) => {
-        return currentData.filter((el) => el.id != post.id);
-      });
+    if (res.data) {
+      posts.set(res.data.data);
     }
 
-    sendNotification(res.message, 10000);
+    return res;
   };
 </script>
 
 <header class="bg-[#3398E1] p-10 px-[20%] text-white">
-  <p class="text-3xl mb-5">Welcome to my Awesome Blog</p>
-  <p>We Love Django and Svelte as much as you do!</p>
+  <Header />
 </header>
 
 {#await fetchPosts()}
@@ -69,7 +51,7 @@
         <div slot="left">
           {#each $posts as post (post.id)}
             <div animate:flip={{ duration: 500 }}>
-              <Post {post} on:deletePost={deletePost} />
+              <Post {post} on:deletePost={(e) => deletePost(e.detail)} />
             </div>
           {/each}
           {#if $posts.length == 0}
@@ -81,7 +63,9 @@
         </div>
       </Body>
     {:else}
-      <p class="p-5">Error Fetching Posts.</p>
+      <p class="p-5">
+        {val || "Error Fetching Posts."}
+      </p>
     {/if}
   </div>
 {/await}

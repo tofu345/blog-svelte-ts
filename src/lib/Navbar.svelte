@@ -17,6 +17,6 @@
       Create
     </p>
     <a href="/about" class="link"> About </a>
-    <!-- <a href="/" class="link"> Content </a> -->
+    <a href="/login" class="link"> Login </a>
   </div>
 </nav>
