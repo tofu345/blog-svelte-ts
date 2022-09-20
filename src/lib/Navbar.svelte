@@ -1,5 +1,6 @@
 <script>
   import general from "$lib/stores/general";
+  // import { getUser } from "$lib/util";
 
   const openModal = () => {
     general.update((currentData) => {
@@ -7,6 +8,8 @@
       return currentData;
     });
   };
+
+  // const user = getUser();
 </script>
 
 <!-- vsm:flex vsm:px-10 -->
@@ -19,7 +22,10 @@
       Create
     </p>
     <a href="/about" class="link"> About </a>
-    <a href="/login" class="link"> Login </a>
-    <a href="/logout" class="link"> Logout </a>
+    <!-- {#if user}
+      <a href="/login" class="link"> Login </a>
+    {:else}
+      <a href="/logout" class="link"> Logout </a>
+    {/if} -->
   </div>
 </nav>

@@ -1,15 +1,17 @@
 <script lang="ts">
   import { fly } from "svelte/transition";
   import { flip } from "svelte/animate";
+
   import Post from "$lib/Post.svelte";
   import Body from "$lib/Body.svelte";
   import Info from "$lib/Info.svelte";
   import PostListSkeleton from "$lib/PostListSkeleton.svelte";
   import PostSkeleton from "$lib/PostSkeleton.svelte";
+  import Header from "$lib/Header.svelte";
+
   import posts from "$lib/stores/posts";
   import general from "$lib/stores/general";
   import { deletePost } from "$lib/util";
-  import Header from "$lib/Header.svelte";
   import type { PostObj } from "$lib/types";
 
   import { api } from "$lib/api";
@@ -19,14 +21,7 @@
       return;
     }
 
-    const res = await api({
-      url: "/posts",
-      headers: {
-        Authorization: `Bearer ${
-          JSON.parse(window.localStorage.getItem("user") || "{}").accessToken
-        }`,
-      },
-    });
+    const res = await api({ url: "/posts" });
 
     if (res.status == 200) {
       const data = res.data.data;

@@ -1,5 +1,5 @@
 import axios, { type AxiosRequestConfig } from "axios";
-import { sendNotification } from "$lib/util";
+import { getUser, sendNotification } from "$lib/util";
 import { goto } from "$app/navigation";
 import { page } from "$app/stores";
 
@@ -11,19 +11,46 @@ export const api = (config: AxiosRequestConfig) => {
     },
   });
 
+  // Automatically add bearer token header if exists
+  let user = getUser();
+  const token = `Bearer ${
+    JSON.parse(window.localStorage.getItem("user") || "{}").accessToken
+  }`;
+  if (user) {
+    config["headers"]
+      ? (config["headers"]["Authorization"] = token)
+      : (config["headers"] = { Authorization: token });
+  }
+
   return instance(config)
     .then((res) => res)
     .catch((err) => {
       err = err.response;
       // const data = err.response.data;
 
+      // Redirect to Login Page if backend if not logged in
       if (err.status == 401) {
-        // if (data.detail === "Authentication credentials were not provided.") {
-        console.log(err);
-        sendNotification(err.data.message || err.data.detail, 5000);
-        page.subscribe((value) => {
-          goto("/login");
+        // console.log(err);
+        err.data.detail === "Authentication credentials were not provided."
+          ? sendNotification("Please Log in to continue", 5000)
+          : sendNotification(
+              err.data.message ||
+                err.data.detail ||
+                "Please Log in to continue",
+              5000
+            );
+
+        let nextPage = "/login";
+        const unsubscribe = page.subscribe((value) => {
+          const url = value.url;
+          const currentPage = url.href.replace(url.origin, "");
+          if (currentPage) {
+            nextPage += `?next=${currentPage}`;
+          }
         });
+        unsubscribe();
+
+        goto(nextPage);
       }
 
       return err;

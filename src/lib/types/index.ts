@@ -13,3 +13,11 @@ export interface PostObj {
   created: string;
   updated: string;
 }
+
+interface UserObj {
+  username: string;
+  accessToken: string;
+  refreshToken: string;
+}
+
+export type User = UserObj | null;

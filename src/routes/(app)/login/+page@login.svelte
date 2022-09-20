@@ -1,10 +1,9 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
+  import { browser } from "$app/environment";
+
   import Header from "$lib/Header.svelte";
   import { send } from "$lib/api";
-
-  import { goto } from "$app/navigation";
-
-  import { browser } from "$app/environment";
 
   let error: string = "",
     username: string = "",
@@ -41,12 +40,11 @@
           })
         );
 
-        // const nextPage = new URLSearchParams(window.location.search).get(
-        //   "next"
-        // );
-        // window.location.href = nextPage ? `/posts?=${nextPage}` : "/posts";
+        const nextPage = new URLSearchParams(window.location.search).get(
+          "next"
+        );
+        window.location.href = nextPage || "/posts";
 
-        window.location.href = "/posts";
         return;
       }
     }

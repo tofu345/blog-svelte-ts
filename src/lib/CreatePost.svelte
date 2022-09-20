@@ -1,15 +1,24 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
-  import { closeModal, sendNotification, updatePosts } from "$lib/util";
-  import { api } from "$lib/api";
   import { get } from "svelte/store";
+
+  import {
+    closeModal,
+    sendNotification,
+    updatePosts,
+    getUser,
+  } from "$lib/util";
+  import { api } from "$lib/api";
   import posts from "$lib/stores/posts";
+
+  const user = getUser();
 
   export let post = {
     title: "",
     content: "",
-    author: "tofu",
+    author: user?.username,
   };
+
   let errors = {
     title: "",
     content: "",

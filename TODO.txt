@@ -23,3 +23,5 @@ have the modal for the create post component be inside it
 - attach token to all requests
 - make all views login required
 - token duration to 7 days
+
+- Instead of deleting mark and not deleted and delete after 30 days automatically

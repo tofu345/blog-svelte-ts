@@ -1,9 +1,18 @@
 import posts from "$lib/stores/posts";
 import notifications from "$lib/stores/notifications";
 import general from "$lib/stores/general";
-import type { Notif, PostObj } from "$lib/types";
+import type { Notif, PostObj, User } from "$lib/types";
 import { goto } from "$app/navigation";
 import { api } from "$lib/api";
+
+export const getUser = (): User | null => {
+  const user = window.localStorage.getItem("user");
+  if (user) {
+    return JSON.parse(user);
+  } else {
+    return null;
+  }
+};
 
 export const truncateStr = (str: string) => {
   const length = 1000;
@@ -64,6 +73,9 @@ export const deletePost = async (post: PostObj) => {
     });
 
     sendNotification(data.message, 10000);
+  } else {
+    // console.log(res);
+    sendNotification(res.data.message, 10000);
   }
   goto("/posts");
 };

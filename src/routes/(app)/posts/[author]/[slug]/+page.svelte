@@ -12,6 +12,7 @@
   import { api } from "$lib/api";
 
   const fetchPost = async () => {
+    // Check if post exists in Post store
     if ($posts) {
       const post = $posts.find((el) => {
         if (el.slug === $page.params.slug && el.author === $page.params.author)
@@ -19,7 +20,7 @@
       });
 
       if (post) {
-        return { responseCode: 100, data: post };
+        return { data: post };
       }
     }
 
