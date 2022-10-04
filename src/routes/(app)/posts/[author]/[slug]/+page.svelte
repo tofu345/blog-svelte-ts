@@ -5,7 +5,7 @@
   import Body from "$lib/Body.svelte";
   import Post from "$lib/Post.svelte";
   import Info from "$lib/Info.svelte";
-  import PostSkeleton from "$lib/PostSkeleton.svelte";
+  import PostSkeleton from "$lib/Skeleton.svelte";
 
   import posts from "$lib/stores/posts";
   import general from "$lib/stores/general";
@@ -48,16 +48,14 @@
   </Body>
 {:then res}
   {#if res}
-    <div in:fly={{ x: -30, duration: 500 }}>
-      <Body>
-        <div slot="left">
-          <Post isDetailView={true} post={res.data} />
-        </div>
-        <div slot="right">
-          <Info />
-        </div>
-      </Body>
-    </div>
+    <Body>
+      <div slot="left">
+        <Post isDetailView={true} post={res.data} />
+      </div>
+      <div slot="right">
+        <Info />
+      </div>
+    </Body>
   {:else}
     <div class="flex flex-col gap-2 justify-center items-center mt-20">
       <svg

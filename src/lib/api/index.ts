@@ -1,56 +1,79 @@
-import axios, { type AxiosRequestConfig } from "axios";
+import axios, { type AxiosPromise, type AxiosRequestConfig } from "axios";
 import { getUser, sendNotification } from "$lib/util";
 import { goto } from "$app/navigation";
 import { page } from "$app/stores";
 
-export const api = (config: AxiosRequestConfig) => {
+export const api = (config: AxiosRequestConfig): AxiosPromise<any> => {
+  const originalConfig = config;
   const instance = axios.create({
     baseURL: "http://127.0.0.1:8000/api",
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-    },
   });
 
   // Automatically add bearer token header if exists
-  let user = getUser();
-  const token = `Bearer ${
-    JSON.parse(window.localStorage.getItem("user") || "{}").accessToken
-  }`;
+  const user = getUser();
+  // console.log(user);
   if (user) {
+    const token = `Bearer ${user?.accessToken}`;
     config["headers"]
       ? (config["headers"]["Authorization"] = token)
       : (config["headers"] = { Authorization: token });
+  } else {
+    // Redirect to Login Page if backend if not logged in
+    let pageUrl = "/login";
+    let pageAt;
+    const unsubscribe = page.subscribe((value) => {
+      const url = value.url;
+      pageAt = url.pathname;
+      const currentPage = url.href.replace(url.origin, "");
+      if (currentPage && !pageUrl.includes("?next")) {
+        pageUrl += `?next=${currentPage}`;
+      }
+    });
+    unsubscribe();
+
+    if (pageAt != "/login") {
+      goto(pageUrl);
+      return new Promise(() => {}) as AxiosPromise;
+    }
   }
 
   return instance(config)
     .then((res) => res)
-    .catch((err) => {
+    .catch(async (err): Promise<any> => {
       err = err.response;
       // const data = err.response.data;
 
-      // Redirect to Login Page if backend if not logged in
       if (err.status == 401) {
-        // console.log(err);
-        err.data.detail === "Authentication credentials were not provided."
-          ? sendNotification("Please Log in to continue", 5000)
-          : sendNotification(
-              err.data.message ||
-                err.data.detail ||
-                "Please Log in to continue",
-              5000
-            );
+        // Try to refresh token
+        if (user) {
+          const response = await instance({
+            url: "/token/refresh/",
+            method: "POST",
+            data: { refresh: user.refreshToken },
+          }).catch((err) => err);
 
-        let nextPage = "/login";
-        const unsubscribe = page.subscribe((value) => {
-          const url = value.url;
-          const currentPage = url.href.replace(url.origin, "");
-          if (currentPage) {
-            nextPage += `?next=${currentPage}`;
+          if (response.status === 200) {
+            user.accessToken = response.data.access;
+            window.localStorage.setItem("user", JSON.stringify(user));
+            return api(originalConfig);
           }
-        });
-        unsubscribe();
+        }
 
-        goto(nextPage);
+        // window.localStorage.removeItem("user");
+
+        // sendNotification(message, 5000);
+
+        // let nextPage = "/login";
+        // const unsubscribe = page.subscribe((value) => {
+        //   const url = value.url;
+        //   const currentPage = url.href.replace(url.origin, "");
+        //   if (currentPage) {
+        //     nextPage += `?next=${currentPage}`;
+        //   }
+        // });
+        // unsubscribe();
+
+        // goto(nextPage);
       }
 
       return err;

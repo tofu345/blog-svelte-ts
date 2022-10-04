@@ -4,6 +4,7 @@
 
   import Header from "$lib/Header.svelte";
   import { send } from "$lib/api";
+  import { sendNotification } from "$lib/util";
 
   let error: string = "",
     username: string = "",
@@ -11,10 +12,11 @@
     usernameError = "",
     passwordError = "";
 
-  if (browser && window.localStorage.getItem("user")) goto("/posts");
+  // if (browser && window.localStorage.getItem("user")) goto("/posts");
 
   const handleSubmit = async (e: SubmitEvent) => {
     (error = ""), (usernameError = ""), (passwordError = "");
+    const _username = username;
     disabled = true;
 
     const formEl = e.target as HTMLFormElement;
@@ -34,16 +36,19 @@
         window.localStorage.setItem(
           "user",
           JSON.stringify({
-            username,
+            username: _username,
             accessToken: data.access,
             refreshToken: data.refresh,
           })
         );
 
-        const nextPage = new URLSearchParams(window.location.search).get(
-          "next"
-        );
-        window.location.href = nextPage || "/posts";
+        let nextPage = new URLSearchParams(window.location.search).get("next");
+        if (nextPage && nextPage == "/login") {
+          nextPage = "/posts";
+        } else {
+          nextPage = "/posts";
+        }
+        window.location.href = nextPage;
 
         return;
       }
@@ -63,7 +68,7 @@
     </div>
   </div>
   <div class="w-full bg-[#F5F5F5] flex flex-col justify-center items-center">
-    <div class="w-70 lg:w-[400px] max-w-[70%] mx-auto">
+    <div class="w-70 lg:w-[400px] max-w-[90%] mx-auto">
       <div class="text-left pl-2 mb-5">
         <h3 class="text-5xl font-semibold mb-2">Sign in</h3>
         <p class="mb-2">Sign in to your account</p>

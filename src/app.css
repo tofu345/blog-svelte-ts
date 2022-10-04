@@ -4,7 +4,12 @@
 
 @layer components {
   .link {
-    @apply border-b-transparent hover:border-b-black border-b-2;
+    /* @apply border-b-transparent hover:border-b-black border-b-2; */
+    @apply p-2 rounded-md cursor-pointer hover:bg-gray-300;
+  }
+
+  .dropItem {
+    @apply w-full text-right p-2 px-3 rounded-md cursor-pointer hover:bg-gray-200;
   }
 
   .form-control {

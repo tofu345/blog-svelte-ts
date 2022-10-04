@@ -12,6 +12,7 @@
 <div class="bg-white rounded-xl flex justify-between border-2 w-[350px]">
   <div class="h-full m-4 mr-3 break-words overflow-hidden">
     {truncateStr(notif.message)}
+    {notif.occurence > 1 ? `(x${notif.occurence})` : ""}
   </div>
 
   <div

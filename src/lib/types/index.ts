@@ -1,6 +1,7 @@
 export interface Notif {
   id: number;
   message: string;
+  occurence: number;
 }
 
 export interface PostObj {

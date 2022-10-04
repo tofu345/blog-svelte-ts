@@ -1,12 +1,9 @@
 <script lang="ts">
-  import { fly } from "svelte/transition";
-  import { flip } from "svelte/animate";
-
   import Post from "$lib/Post.svelte";
   import Body from "$lib/Body.svelte";
   import Info from "$lib/Info.svelte";
   import PostListSkeleton from "$lib/PostListSkeleton.svelte";
-  import PostSkeleton from "$lib/PostSkeleton.svelte";
+  import Skeleton from "$lib/Skeleton.svelte";
   import Header from "$lib/Header.svelte";
 
   import posts from "$lib/stores/posts";
@@ -17,10 +14,6 @@
   import { api } from "$lib/api";
 
   const fetchPosts = async () => {
-    if ($posts) {
-      return;
-    }
-
     const res = await api({ url: "/posts" });
 
     if (res.status == 200) {
@@ -29,12 +22,12 @@
         el["to"] = `/posts/${el.author}/${el.slug}`;
       });
       posts.set(data);
+    } else {
+      console.log(res);
     }
 
     return res;
   };
-
-  const postList = fetchPosts();
 </script>
 
 <svelte:head>
@@ -45,22 +38,22 @@
   <Header />
 </header>
 
-{#await postList}
+{#await $posts ? $posts : fetchPosts()}
   <Body>
     <div slot="left">
       <PostListSkeleton />
     </div>
     <div slot="right">
-      <PostSkeleton />
+      <Skeleton />
     </div>
   </Body>
 {:then val}
-  <div in:fly={{ x: -30, duration: 500 }}>
+  <div>
     {#if $posts}
       <Body>
         <div slot="left">
           {#each $posts as post (post.id)}
-            <div animate:flip={{ duration: 500 }}>
+            <div>
               <Post {post} on:deletePost={(e) => deletePost(e.detail)} />
             </div>
           {/each}
@@ -73,9 +66,7 @@
         </div>
       </Body>
     {:else}
-      <p class="p-5">
-        {val || "Error Fetching Posts."}
-      </p>
+      <p class="p-5">Error Fetching Posts.</p>
     {/if}
   </div>
 {/await}

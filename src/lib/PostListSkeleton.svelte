@@ -1,6 +1,6 @@
 <script>
-  import PostSkeleton from "./PostSkeleton.svelte";
+  import Skeleton from "./Skeleton.svelte";
 </script>
 
-<PostSkeleton />
-<PostSkeleton />
+<Skeleton />
+<Skeleton />

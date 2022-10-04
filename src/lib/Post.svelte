@@ -2,6 +2,7 @@
   import Card from "./Card.svelte";
   import { truncateStr, deletePost } from "$lib/util";
   import type { PostObj } from "$lib/types";
+  import CreatePost from "$lib/CreatePost.svelte";
 
   export let post: PostObj = {
     id: 0,
@@ -21,7 +22,7 @@
 </script>
 
 <Card>
-  <h3 class="text-3xl font-medium">{post.title}</h3>
+  <h3 class="break-all text-3xl font-medium">{post.title}</h3>
   <p class="font-light text-gray-500">
     Written on {post.created} by {post.author}
   </p>
@@ -54,7 +55,7 @@
     </a>
   {/if}
 
-  {#if isDetailView}
+  <!-- {#if isDetailView}
     <button
       type="button"
       class="absolute top-0 right-0 m-3 text-gray-400 bg-transparent hover:bg-gray-200
@@ -79,7 +80,7 @@
       </svg>
       <span class="sr-only">Close modal</span>
     </button>
-  {/if}
+  {/if} -->
 </Card>
 
 <style>
