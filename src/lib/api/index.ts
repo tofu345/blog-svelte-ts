@@ -1,13 +1,13 @@
 import axios, { type AxiosPromise, type AxiosRequestConfig } from "axios";
-import { getUser, sendNotification } from "$lib/util";
+import { getUser } from "$lib/util";
 import { goto } from "$app/navigation";
 import { page } from "$app/stores";
 
 export const api = (config: AxiosRequestConfig): AxiosPromise<any> => {
-  const originalConfig = config;
   const instance = axios.create({
     baseURL: "http://127.0.0.1:8000/api",
   });
+  const originalConfig = config;
 
   // Automatically add bearer token header if exists
   const user = getUser();
@@ -18,7 +18,7 @@ export const api = (config: AxiosRequestConfig): AxiosPromise<any> => {
       ? (config["headers"]["Authorization"] = token)
       : (config["headers"] = { Authorization: token });
   } else {
-    // Redirect to Login Page if backend if not logged in
+    // Redirect to Login Page if backend returns not logged in
     let pageUrl = "/login";
     let pageAt;
     const unsubscribe = page.subscribe((value) => {
@@ -58,22 +58,6 @@ export const api = (config: AxiosRequestConfig): AxiosPromise<any> => {
             return api(originalConfig);
           }
         }
-
-        // window.localStorage.removeItem("user");
-
-        // sendNotification(message, 5000);
-
-        // let nextPage = "/login";
-        // const unsubscribe = page.subscribe((value) => {
-        //   const url = value.url;
-        //   const currentPage = url.href.replace(url.origin, "");
-        //   if (currentPage) {
-        //     nextPage += `?next=${currentPage}`;
-        //   }
-        // });
-        // unsubscribe();
-
-        // goto(nextPage);
       }
 
       return err;

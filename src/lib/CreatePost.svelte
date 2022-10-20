@@ -62,13 +62,17 @@
       goto("/posts");
     } else {
       const data = res.data;
-      if (data.errors.non_field_errors) {
-        errors.non_field_errors = data.errors.non_field_errors;
-      } else if (data.message) {
-        errors.non_field_errors = data.message;
+      if (data) {
+        if (data.errors.non_field_errors) {
+          errors.non_field_errors = data.errors.non_field_errors;
+        } else if (data.message) {
+          errors.non_field_errors = data.message;
+        }
+        if (data.errors.title) errors.title = data.errors.title;
+        if (data.errors.content) errors.content = data.errors.content;
+      } else {
+        errors.non_field_errors = "Error Creating Post";
       }
-      if (data.errors.title) errors.title = data.errors.title;
-      if (data.errors.content) errors.content = data.errors.content;
     }
   };
 </script>

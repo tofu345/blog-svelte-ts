@@ -26,3 +26,5 @@ have the modal for the create post component be inside it
 
 - Instead of deleting mark and not deleted and delete after 30 days automatically
 - Paginate posts (20 at a time)
+
+- Your Posts should be collapsable

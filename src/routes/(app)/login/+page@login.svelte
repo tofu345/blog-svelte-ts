@@ -1,10 +1,6 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
-  import { browser } from "$app/environment";
-
   import Header from "$lib/Header.svelte";
   import { send } from "$lib/api";
-  import { sendNotification } from "$lib/util";
 
   let error: string = "",
     username: string = "",

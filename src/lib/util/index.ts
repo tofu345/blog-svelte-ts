@@ -17,8 +17,7 @@ export const getUser = (): User | null => {
   }
 };
 
-export const truncateStr = (str: string) => {
-  const length = 1000;
+export const truncateStr = (str: string, length = 1000) => {
   if (str && str.length > length) {
     return str.substring(0, length) + "...";
   } else {
